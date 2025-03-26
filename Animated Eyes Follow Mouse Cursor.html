@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Interactive Eyes</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: "Bebas Neue", cursive;
+      background: #0c3b5a;  
+    }
+
+    .container {
+      display: flex;
+    }
+
+    .eyes {
+      position: relative;
+      width: 120px; /* Slightly bigger eyes */
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+      margin: 0 20px;
+      border-radius: 50%;
+      box-shadow: 0 5px 45px rgba(0, 0, 0, 0.2), inset 0 0 15px #f5af19, inset 0 0 25px #f5af19;
+      transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .pupil {
+      position: absolute;
+      width: 55px;  /* Increased size */
+      height: 55px;
+      background: #000;
+      border-radius: 50%;
+      border: 10px solid skyblue;
+      transition: transform 0.1s linear;
+    }
+
+    /* Wobble Effect */
+    .eyes:hover {
+      animation: wobble 0.3s ease-in-out infinite alternate;
+    }
+
+    @keyframes wobble {
+      0% { transform: rotate(-10deg); }
+      100% { transform: rotate(10deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="eyes">
+      <div class="pupil"></div>
+    </div>
+    <div class="eyes">
+      <div class="pupil"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("mousemove", movePupil);
+
+    function movePupil(event) {
+      const pupils = document.querySelectorAll(".pupil");
+      const eyes = document.querySelectorAll(".eyes");
+
+      pupils.forEach((pupil, index) => {
+        let eye = eyes[index];
+        let eyeX = eye.getBoundingClientRect().left + eye.clientWidth / 2;
+        let eyeY = eye.getBoundingClientRect().top + eye.clientHeight / 2;
+
+        let dx = event.pageX - eyeX;
+        let dy = event.pageY - eyeY;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Move the pupil
+        let maxMove = 30; // Limit movement
+        let angle = Math.atan2(dy, dx);
+        let pupilX = Math.cos(angle) * Math.min(distance, maxMove);
+        let pupilY = Math.sin(angle) * Math.min(distance, maxMove);
+        pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+
+        // Add Red Glow if cursor is close
+        let glowRange = 100;
+        if (distance < glowRange) {
+          eye.style.boxShadow = "0 0 25px red, inset 0 0 15px red, inset 0 0 25px red";
+        } else {
+          eye.style.boxShadow = "0 5px 45px rgba(0, 0, 0, 0.2), inset 0 0 15px #f5af19, inset 0 0 25px #f5af19";
+        }
+      });
+    }
+
+    // Scaling effect on click
+    const eyes = document.querySelectorAll(".eyes");
+    eyes.forEach((eye) => {
+      eye.addEventListener("click", () => {
+        eye.style.transform = "scale(1.2)";
+        setTimeout(() => {
+          eye.style.transform = "scale(1)";
+        }, 200);
+      });
+    });
+  </script>
+</body>
+</html>
